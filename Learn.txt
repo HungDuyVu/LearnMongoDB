@@ -1,0 +1,105 @@
+MongoDB: noSQL, Một bộ sưu tập. Lưu trữ mỗi loại bản ghi dữ liệu cụ thể, như tác giả, người dùng, giống như json có key và value
+Cho phép tài liệu lồng nhau trong một tài liệu
+ví dụ trong sách có tác giả -> thay thế cho 2 bảng như trong sql
+cho phép cấu trúc linh hoạt
+truy vấn dễ dàng hơn nhất là đọc và ghi dễ dàng hơn
+hiệu suất tốc độ cao
+
+Cấu trúc:
+Lưu trữ dữ liệu vào các collections
+Lưu giống như 1 đối tương json có key và value
+Mỗi thành phần sẽ có 1 id duy nhất sử dụng để truy vấn 
+MỖI document có thể lồng nhau trong document có thêm documet nữa
+
+{
+   "title": "Name of the Wind",
+   "author": "Patrick Rothfuss",
+   "papes": 500,
+   "genres": ["fantasy", "magical"],
+   "rating": 9
+}
+
+Using MB shell
+show dbs: hien thi toan bo db
+use name_db: su dung db theo name
+mongosh: su dung shell tren terminal
+show collections: hien thi tat ca collections
+db.name_collection.insertOne({}): chen them 1 doi tuong
+co the them du dieu ngay khi collection khong ton tai
+Khi do db se tu sinh ra collection moi
+
+db.name_collection.insertMany([])
+.find() - tra ve 20 document dau tien
+db.books.find({author: "Brandon Sanderson"}) - tiem khiem doi tuong cu the
+
+.findOne(): tra ve 1 gia tri dau tien tim thay trong db
+
+db.books.find(author: "BrandonSanderson" ).count() - dem so luong document co thuoc tinh author: ...
+
+db.books.find().limit(3) - chi lay 3 phan tu
+
+db.books.find().sort({title: 1}) - sap xep tang dan
+nau la - 1 thi la giam dan
+
+bookstore> db.books.find({ rating: {$gt: 7 }}) -> tim kiem rating > 7
+neu thay gt -> lt la nho hon
+lte: nho hon hoac bang
+gte: lon hon hoac bang
+
+db.books.find({#or: [{}, {}]}): tim kiem hoac thoa man 1 trong cac gia tri
+
+db.books.find({rating: {$in: [7, 8, 9]}}): tim tat ca gia tri trong khoang [7, 8, 9]
+
+db.books.find({rating: {$nin: [7, 8, 9]}}): nin: khong nam trong khoang
+
+db.books.find({genres: ["fantasy"]}): gia tri tra ve thoa man khi chi co 1 gia tri fantasy trong key genres
+
+db.books.find({genres: {$all: ["fantasy", "sci-fi"]}})
+
+db.books.find({"reviews.name": "luigi"}): tim name la luigi trong phan reviews
+
+db.books.deleteOne({ _id: ObjectId('65fe897cb7add1f9e28bf206')}): xoa document dua vao id
+
+bookstore> db.books.deleteMany({author: "Terry Pratchett"}): xoa tat ca cuoc sach voi author 
+
+db.books.updateOne({_id}, {thanh phan can update}): update data
+
+bookstore> db.books.updateMany({author:  "Terry Pratchett"}, {$set: {author: "Terry Pratchet"}}) - sua doi author cu thanh autho moi
+
+bookstore> db.books.updateOne({_id: ObjectId('65ff929b9ee44115008bf20b')}, {$inc: {pages: 2}}) - tang thuoc tinh pages len 2 don vi "inc" - LUU Y CHI DUNG CHO NUMBER
+
+db.books.updateOne({_id: ObjectId('65ff929b9ee44115008bf20b')}, {$pul: {genres: "fantasy"}}) -  pul phan tu "fantasy" tra khoi genres
+Thay pull -> push: keo vao
+
+db.books.updateOne({_id: ObjectId('65ff929b9ee44115008bf20b')}, {$push: {genres: "fantasy"}})
+
+db.books.updateOne({_id: ObjectId('65ff929b9ee44115008bf20b')}, {$push: {genres: {$each: ["1", "2"]}}}) - day lan luot tung phan tu vao genres
+
+db.books.find({rating: 8}).explain('executionStats'): trong MongoDB được sử dụng để xem kế hoạch thực hiện và thống kê về việc thực thi truy vấn. Khi bạn thêm 'executionStats' vào phương thức explain(), MongoDB sẽ trả về thống kê chi tiết về việc thực hiện truy vấn, bao gồm thời gian thực thi, số lượng tài liệu đã quét, chỉ số sử dụng và nhiều thông tin khác.
+
+Dưới đây là một số điều mà câu lệnh db.books.find({rating: 8}).explain('executionStats') sẽ cung cấp:
+
+Thời gian thực thi: Bao gồm thời gian mà truy vấn mất để hoàn thành.
+
+Thống kê thực hiện: Bao gồm các thông tin như số lượng tài liệu được quét, số lượng tài liệu được trả về, số lượng chỉ số được sử dụng, và các thông tin liên quan đến việc thực hiện truy vấn.
+
+Chế độ thực hiện: MongoDB sẽ cho bạn biết liệu truy vấn đã được thực hiện theo phương pháp nào (ví dụ: sử dụng chỉ số hay quét toàn bộ bảng).
+
+Thông tin chỉ số: Nếu truy vấn sử dụng chỉ số, thông tin về chỉ số đó sẽ được cung cấp, bao gồm loại chỉ số, số lượng tài liệu được quét bằng chỉ số và nhiều thông tin khác.
+
+Khi bạn thực thi câu lệnh trên, MongoDB sẽ trả về một tài liệu JSON chứa các thông tin trên về việc thực hiện truy vấn. Bạn có thể sử dụng thông tin này để phân tích và tối ưu hóa hiệu suất của các truy vấn MongoDB trong ứng dụng của mình.
+
+db.books.createIndex({rating: 8}) - tao index
+
+db.books.getIndexes() - xem tất cả các index được tạo
+
+db.books.dropIndex({rating: 8}) - xóa chỉ mục
+
+
+
+
+
+
+
+
+
